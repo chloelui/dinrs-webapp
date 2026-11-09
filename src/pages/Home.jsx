@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import StudentCard from "../components/StudentCard";
-import { getAllUsers, API_BASE_URL } from "../api/users";
+import { getAllUsers } from "../api/users";
 
 const steps = [
   { number: 1, title: "Create a profile", text: "Add your name, year, and major." },
@@ -11,18 +11,15 @@ const steps = [
 
 // Convert API user into the shape StudentCard expects
 function toCardShape(user) {
-  let picture = user.profilePicture || "";
-  if (picture && !picture.startsWith("http")) {
-    picture = `${API_BASE_URL}${picture.startsWith("/") ? "" : "/"}${picture}`;
-  }
-
   return {
     id: user.id,
     name: `${user.firstName} ${user.lastName}`,
     year: `Class of ${user.graduationYear}`,
     major: user.major,
     bio: user.bio,
-    profilePicture: picture,
+    profilePicture: user.profilePicture || "",
+    halls: user.diningHalls,
+    foods: user.favoriteFoods,
   };
 }
 
@@ -103,7 +100,7 @@ function Home() {
                 {isLoading && (
                     <div className="loading">
                         <div className="spinner" aria-hidden="true"></div>
-                        <p>Loading students… the server may take a minute to wake up.</p>
+                        <p>Loading students…</p>
                     </div>
                 )}
 
