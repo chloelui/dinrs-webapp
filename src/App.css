@@ -734,6 +734,9 @@ textarea.form-input {
   justify-content: center;
   gap: 4px 6px;
 }
+.profile-delete {
+  margin-top: 32px;
+}
 .profile-meta {
   font-size: 16px;
   color: var(--muted);

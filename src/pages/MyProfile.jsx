@@ -35,12 +35,23 @@ function findSimilarStudents(profile) {
     .map((item) => item.student);
 }
 
-function MyProfile({ profile, onUpdateProfile }) {
+function MyProfile({ profile, isLoading, onUpdateProfile, onDeleteProfile }) {
     const [connectedIds, setConnectedIds] = useState([]);
     const [isEditingHalls, setIsEditingHalls] = useState(false);
     const [draftHalls, setDraftHalls] = useState([]);
     const [isEditingFoods, setIsEditingFoods] = useState(false);
     const [draftFoods, setDraftFoods] = useState([]);
+
+    if (isLoading) {
+        return (
+            <main className="page">
+                <div className="loading">
+                    <div className="spinner" aria-hidden="true"></div>
+                    <p>Loading your profile…</p>
+                </div>
+            </main>
+        );
+    }
 
     // show friendly prompt if nothing saved or page refreshed
     if (!profile) {
@@ -55,11 +66,11 @@ function MyProfile({ profile, onUpdateProfile }) {
 
     /* ----- photo ----- */
     function handleChangePhoto(file) {
-        onUpdateProfile({ photoUrl: URL.createObjectURL(file), photoFile: file });
+        onUpdateProfile({ photoFile: file });
     }
 
     function handleRemovePhoto() {
-        onUpdateProfile({ photoUrl: "", photoFile: null });
+        onUpdateProfile({ photoFile: null });
     }
 
     /* ----- dining halls ----- */
@@ -145,6 +156,18 @@ function MyProfile({ profile, onUpdateProfile }) {
                             <span className="profile-meta">{profile.major}</span>
                         </EditableText>
                     </div>
+
+                    <button
+                        type="button"
+                        className="btn-danger btn-small profile-delete"
+                        onClick={() => {
+                            if (window.confirm("Delete your profile? This can't be undone.")) {
+                                onDeleteProfile();
+                            }
+                        }}
+                    >
+                        Delete profile
+                    </button>
                 </aside>
 
                 {/* ---------- RIGHT COLUMN ---------- */}

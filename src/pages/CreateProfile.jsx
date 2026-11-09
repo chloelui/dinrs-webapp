@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PhotoUpload from "../components/PhotoUpload";
 import FoodChipInput from "../components/FoodChipInput";
-import { buildUserFormData } from "../api/users";
+import { buildUserFormData, createUser } from "../api/users";
 import { DINING_HALLS } from "../data/diningHalls";
 import DiningHallCheckboxes from "../components/DiningHallCheckboxes";
 
@@ -49,6 +49,8 @@ function CreateProfile({ onSaveProfile }) {
     const [halls, setHalls] = useState([]);
     const [foods, setFoods] = useState([]);
     const [errors, setErrors] = useState({});
+    const [isSaving, setIsSaving] = useState(false);
+    const [submitError, setSubmitError] = useState("");
 
     function handleChange(event) {
         const { name, value } = event.target;
@@ -61,29 +63,27 @@ function CreateProfile({ onSaveProfile }) {
         setErrors({ ...errors, image: undefined });
     }
 
-    function handleSubmit(event) {
-        event.preventDefault();     // stop browser's default page reload
-        
+    async function handleSubmit(event) {
+        event.preventDefault();
+
         const newErrors = validate(values, image);
         setErrors(newErrors);
-        if (Object.keys(newErrors).length > 0) return;      // stop if anything invalid
+        if (Object.keys(newErrors).length > 0) return;
 
-        // What will be sent to API
-        const formData = buildUserFormData({ ...values, image });
-        console.log("Data that will be sent to createUser:");
-        for (const [key, value] of formData.entries()) {
-            console.log(key, value);
+        setIsSaving(true);
+        setSubmitError("");
+
+        try {
+            const formData = buildUserFormData({ ...values, image, halls, foods });
+            const newUser = await createUser(formData);
+            onSaveProfile(newUser);
+            navigate("/profile");
+        } catch (err) {
+            console.error(err);
+            setSubmitError(err.message);
+        } finally {
+            setIsSaving(false);
         }
-
-        // Save profile in App's state while API is down
-        onSaveProfile({
-            id: "local-profile",
-            ...values,
-            halls,
-            foods,
-            photoUrl: URL.createObjectURL(image),
-        });
-        navigate("/profile");
     }
 
     function handleCancel() {
@@ -180,8 +180,11 @@ function CreateProfile({ onSaveProfile }) {
                         <FoodChipInput foods={foods} onFoodsChange={setFoods} />
                     </div>
 
+                    {submitError && <p className="form-error">{submitError}</p>}
                     <div className="form-actions">
-                        <button type="submit" className="btn-primary">Save Profile</button>
+                        <button type="submit" className="btn-primary" disabled={isSaving}>
+                            {isSaving ? "Saving..." : "Save Profile"}
+                        </button>
                         <button type="button" className="btn-outline" onClick={handleCancel}>Cancel</button>
                     </div>
                 </form>
