@@ -351,7 +351,7 @@ a.btn-outline {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 300px));
   justify-content: center;
-  gap: 24px;
+  gap: 46px;
 }
 .student-bio {
   margin: 0 0 12px;
@@ -726,6 +726,7 @@ textarea.form-input {
   font-size: 36px;
   font-weight: 700;
   line-height: 1.2;
+  color:#1a1a1a;
 }
 .profile-meta-row {
   display: flex;
@@ -756,6 +757,7 @@ textarea.form-input {
   margin: 0 0 12px;
   font-size: 28px;
   font-weight: 700;
+  color:#1a1a1a;
 }
 .profile-bio {
   margin: 0;
