@@ -95,62 +95,64 @@ function CreateProfile({ onSaveProfile }) {
             <div className="form-card">
                 <h1 className="form-title">Create your profile</h1>
                 <form onSubmit={handleSubmit} noValidate>
-                    <div className="form-field">
-                        <label className="form-label" htmlFor="name">Name</label>
-                        <input 
-                            className="form-input"
-                            id="name"
-                            name="name"
-                            type="text"
-                            placeholder="Your full name"
-                            value={values.name}
-                            onChange={handleChange}
-                        />
-                        {errors.name && <p className="form-error">{errors.name}</p>}
-                    </div>
+                    <div className="form-grid">
+                        <div className="form-field">
+                            <label className="form-label" htmlFor="name">Name</label>
+                            <input 
+                                className="form-input"
+                                id="name"
+                                name="name"
+                                type="text"
+                                placeholder="Your full name"
+                                value={values.name}
+                                onChange={handleChange}
+                            />
+                            {errors.name && <p className="form-error">{errors.name}</p>}
+                        </div>
 
-                    <div className="form-field">
-                        <label className="form-label" htmlFor="email">Email</label>
-                        <input
-                            className="form-input"
-                            id="email"
-                            name="email"
-                            type="email"
-                            placeholder="you@u.northwestern.edu"
-                            value={values.email}
-                            onChange={handleChange} 
-                        />
-                        {errors.email && <p className="form-error">{errors.email}</p>}
-                    </div>
+                        <div className="form-field">
+                            <label className="form-label" htmlFor="email">Email</label>
+                            <input
+                                className="form-input"
+                                id="email"
+                                name="email"
+                                type="email"
+                                placeholder="you@u.northwestern.edu"
+                                value={values.email}
+                                onChange={handleChange} 
+                            />
+                            {errors.email && <p className="form-error">{errors.email}</p>}
+                        </div>
 
-                    <div className="form-field">
-                        <label className="form-label" htmlFor="graduationYear">Graduation year</label>
-                        <input 
-                            className="form-input"
-                            id="graduationYear"
-                            name="graduationYear"
-                            type="text"
-                            inputMode="numeric"
-                            maxLength={4}
-                            placeholder="e.g., 2028"
-                            value={values.graduationYear}
-                            onChange={handleChange}
-                        />
-                        {errors.graduationYear && <p className="form-error">{errors.graduationYear}</p>}
-                    </div>
+                        <div className="form-field">
+                            <label className="form-label" htmlFor="graduationYear">Graduation year</label>
+                            <input 
+                                className="form-input"
+                                id="graduationYear"
+                                name="graduationYear"
+                                type="text"
+                                inputMode="numeric"
+                                maxLength={4}
+                                placeholder="e.g., 2028"
+                                value={values.graduationYear}
+                                onChange={handleChange}
+                            />
+                            {errors.graduationYear && <p className="form-error">{errors.graduationYear}</p>}
+                        </div>
 
-                    <div className="form-field">
-                        <label className="form-label" htmlFor="major">Major</label>
-                        <input
-                            className="form-input"
-                            id="major"
-                            name="major"
-                            type="text"
-                            placeholder="e.g., Biology"
-                            value={values.major}
-                            onChange={handleChange}
-                        />
-                        {errors.major && <p className="form-error">{errors.major}</p>}
+                        <div className="form-field">
+                            <label className="form-label" htmlFor="major">Major</label>
+                            <input
+                                className="form-input"
+                                id="major"
+                                name="major"
+                                type="text"
+                                placeholder="e.g., Biology"
+                                value={values.major}
+                                onChange={handleChange}
+                            />
+                            {errors.major && <p className="form-error">{errors.major}</p>}
+                        </div>
                     </div>
 
                     <div className="form-field">

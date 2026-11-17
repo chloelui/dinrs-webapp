@@ -412,6 +412,15 @@ a.btn-outline {
   font-weight: 700;
   color:#1a1a1a;
 }
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 24px;
+  align-items: start;
+}
+.form-grid .form-input {
+  max-width: 100%;
+}
 .form-field {
   margin: 0 0 24px;
   padding: 0;
@@ -797,6 +806,7 @@ textarea.form-input {
   .steps-grid { grid-template-columns: 1fr; }
   .featured-grid { grid-template-columns: 1fr; }
 
+  .form-grid { grid-template-columns: 1fr; }
   .form-page { padding: 32px 16px; }
   .form-card { padding: 20px; }
   .form-input { max-width: 100%; }
