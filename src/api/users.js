@@ -38,7 +38,7 @@ export function updateUser(id, formData) {
 }
 
 export function deleteUser(id) {
-  return request(`/users/${id}`, { method: "DELETE "});
+  return request(`/users/${id}`, { method: "DELETE" });
 }
 
 // ---------- build request bodies ----------
