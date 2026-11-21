@@ -41,6 +41,24 @@ export function deleteUser(id) {
   return request(`/users/${id}`, { method: "DELETE" });
 }
 
+// ---------- connections ----------
+// everyone user has connected with (server returns full user objects)
+export function getConnections(id) {
+  return request(`/users/${id}/connections`);
+}
+
+export function connectUser(id, otherId) {
+  return request(`/users/${id}/connections`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ connectedUserId: otherId }),
+  });
+}
+
+export function disconnectUser(id, otherId) {
+  return request(`/users/${id}/connections/${otherId}`, { method: "DELETE" });
+}
+
 // ---------- build request bodies ----------
 // used by create profile form to send everything
 export function buildUserFormData({ name, email, bio, major, graduationYear, image, halls, foods }) {
