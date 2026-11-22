@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import StudentCard from "../components/StudentCard";
 import { getAllUsers } from "../api/users";
+import useConnections from "../hooks/useConnections";
+import { toCardShape } from "../utils/students";
 
 const steps = [
   { number: 1, title: "Create a profile", text: "Add your name, year, and major." },
@@ -9,25 +11,12 @@ const steps = [
   { number: 3, title: "Connect with people who match", text: "Send a request to someone who shares your tastes." },
 ];
 
-// Convert API user into the shape StudentCard expects
-function toCardShape(user) {
-  return {
-    id: user.id,
-    name: `${user.firstName} ${user.lastName}`,
-    year: `Class of ${user.graduationYear}`,
-    major: user.major,
-    bio: user.bio,
-    profilePicture: user.profilePicture || "",
-    halls: user.diningHalls,
-    foods: user.favoriteFoods,
-  };
-}
-
-function Home() {
+function Home({ myProfile }) {
+    const meId = myProfile?.id;
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
-    const [connectedIds, setConnectedIds] = useState([]);
+    const { connectedIds, toggleConnect } = useConnections(meId);
 
     useEffect(() => {
         let ignore = false;
@@ -52,15 +41,7 @@ function Home() {
         };
     }, []);
 
-    function handleToggleConnect(id) {
-        if (connectedIds.includes(id)) {
-            setConnectedIds(connectedIds.filter((existingId) => existingId !== id));
-        } else {
-            setConnectedIds([...connectedIds, id]);
-        }
-    }
-
-    const featuredUsers = users.slice(0, 4);
+    const featuredUsers = users.filter((u) => u.id !== meId).slice(0, 4);
 
     return (
         <main>
@@ -113,7 +94,7 @@ function Home() {
                                 key={user.id}
                                 student={toCardShape(user)}
                                 isConnected={connectedIds.includes(user.id)}
-                                onToggleConnect={handleToggleConnect}
+                                onToggleConnect={toggleConnect}
                             />
                         ))}
                     </div>

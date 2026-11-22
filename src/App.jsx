@@ -95,8 +95,8 @@ function App() {
       />
 
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/discover" element={<Discover isLoggedIn={isLoggedIn} />} />
+        <Route path="/" element={<Home myProfile={muProfile} />} />
+        <Route path="/discover" element={<Discover isLoggedIn={isLoggedIn} myProfile={myProfile} />} />
         <Route path="/create-profile" element={<CreateProfile onSaveProfile={handleSaveProfile} />} />
         <Route
           path="/profile"

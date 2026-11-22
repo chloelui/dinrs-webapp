@@ -1,23 +1,62 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import StudentCard from "../components/StudentCard";
-import { students } from "../data/students";
+import { getAllUsers } from "../api/users";
+import useConnections from "../hooks/useConnections";
+import { toCardShape } from "../utils/students";
 
-const diningHallOptions = [...new Set(students.flatMap((s) => s.halls))].sort();
-const foodOptions = [...new Set(students.flatMap((s) => s.foods))].sort();
 const yearOptions = ["Freshman", "Sophomore", "Junior", "Senior", "Graduate"];
 
 const PAGE_SIZE = 8;
 
-function Discover({ isLoggedIn }) {
+function Discover({ isLoggedIn, myProfile }) {
+  const meId = myProfile?.id;
+
+  const [users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({ diningHall: "", foodType: "", year: "" });
-  const [connectedIds, setConnectedIds] = useState([]);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const { connectedIds, toggleConnect } = useConnections(meId);
+
+  // Load all students from server once when page opens
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadUsers() {
+      try {
+        const data = await getAllUsers();
+        if (!ignore) setUsers(data);
+      } catch (err) {
+        console.error(err);
+        if (!ignore) setError("Couldn't load students. Please try again in a moment.");
+      } finally {
+        if (!ignore) setIsLoading(false);
+      }
+    }
+
+    loadUsers();
+    return () => {ignore = true;};
+  }, []);
 
   useEffect(() => {
     document.title = connectedIds.length > 0 ? `dinrs (${connectedIds.length} connected)` : "dinrs";
-    console.log("Connected student ids:", connectedIds);
   }, [connectedIds]);
+
+  // Users (except me) shown in card shape
+  const students = useMemo(
+    () => users.map(toCardShape).filter((s) => s.id !== meId),
+    [users, meId]
+  );
+
+  const diningHallOptions = useMemo(
+    () => [...new Set(students.flatMap((s) => s.halls))].sort(),
+    [students]
+  );
+  const foodOptions = useMemo(
+    () => [...new Set(students.flatMap((s) => s.foods))].sort(),
+    [students]
+  );
 
   function handleSearchChange(event) {
     setSearchTerm(event.target.value);
@@ -28,14 +67,6 @@ function Discover({ isLoggedIn }) {
     const { name, value } = event.target;
     setFilters({ ...filters, [name]: value });
     setVisibleCount(PAGE_SIZE);
-  }
-
-  function handleToggleConnect(id) {
-    if (connectedIds.includes(id)) {
-      setConnectedIds(connectedIds.filter((existingId) => existingId !== id)); // typo fixed
-    } else {
-      setConnectedIds([...connectedIds, id]);
-    }
   }
 
   function handleLoadMore() {
@@ -53,14 +84,14 @@ function Discover({ isLoggedIn }) {
       s.halls.some((hall) => hall.toLowerCase().includes(search));
     const matchesHall = filters.diningHall === "" || s.halls.includes(filters.diningHall);
     const matchesFood = filters.foodType === "" || s.foods.includes(filters.foodType);
-    const matchesYear = filters.year === "" || s.year === filters.year;
+    const matchesYear = filters.year === "" || s.standing === filters.year;
     return matchesSearch && matchesHall && matchesFood && matchesYear;
   });
 
   const visibleStudents = filteredStudents.slice(0, visibleCount);
   const hasMore = visibleCount < filteredStudents.length;
 
-  return (
+    return (
     <main className="page">
       <h1 className="page-title">Discover students</h1>
       <p className="page-subtitle">
@@ -99,16 +130,27 @@ function Discover({ isLoggedIn }) {
         </select>
       </div>
 
-      {visibleStudents.length === 0 ? (
+      {isLoading && (
+        <div className="loading">
+          <div className="spinner" aria-hidden="true"></div>
+          <p>Loading students…</p>
+        </div>
+      )}
+
+      {error && <p className="error-message">{error}</p>}
+
+      {!isLoading && !error && visibleStudents.length === 0 && (
         <p className="empty-message">No students match those filters. Try clearing one.</p>
-      ) : (
+      )}
+
+      {!isLoading && !error && visibleStudents.length > 0 && (
         <div className="card-grid">
           {visibleStudents.map((student) => (
             <StudentCard
               key={student.id}
               student={student}
               isConnected={connectedIds.includes(student.id)}
-              onToggleConnect={handleToggleConnect}
+              onToggleConnect={toggleConnect}
             />
           ))}
         </div>
